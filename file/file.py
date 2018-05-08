@@ -35,7 +35,7 @@ def uploadfile():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return 'add success'
+        return jsonify({'data': '/static/uploads' + filename})
   return 'fail';
 
 # 删除上传的任务文件
