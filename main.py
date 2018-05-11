@@ -7,7 +7,7 @@ import sqlite3
 from task.task import task
 from file.file import file
 from board.board import board
-from TaskLog.TaskLog import TaskLog
+from tasklog.tasklog import tasklog
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -32,7 +32,7 @@ app.register_blueprint(file, url_prefix='/file')
 
 app.register_blueprint(board, url_prefix='/board')
 
-app.register_blueprint(TaskLog, url_prefix='/TaskLog')
+app.register_blueprint(tasklog, url_prefix='/tasklog')
 
 
 if __name__ == '__main__':
