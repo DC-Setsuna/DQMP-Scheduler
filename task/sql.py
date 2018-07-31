@@ -7,10 +7,7 @@ query = {
                       description, tag, enabled, freqency,
                       task_type, threshold, filepath, upload_time,
                       update_time, content, upload_user_id, taskname)
-              VALUES (?, ?, ?, ?,
-                      ?, ?, ?, ?,
-                      ?, ?, ?, ?,
-                      ?, ?, ?, ?)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     ''',
     'update_task': '''
     UPDATE task

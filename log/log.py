@@ -99,6 +99,13 @@ def selectSpeErrorTaskByResulttime():
         taskList = query_db_outside(query['SelectSpeMonthlyErrorList'], (date,module,userid,))
     return jsonify({'code': 200, 'message': 'ok', 'data': taskList})
 
+@log.route('/selectTasks',methods=['GET','POST'])
+def selectTasks():
+
+    owner = request.form.get('owner')
+    taskList = query_db_outside(query['SelectTaskOfMike'], (owner,))
+    return jsonify({'code': 200, 'message': 'ok', 'data': taskList})
+
 def getuserid(sessionid):
     if redis.get(sessionid) is not None:
         return redis.get(sessionid).decode()

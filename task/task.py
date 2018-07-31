@@ -37,7 +37,7 @@ def add_task():
     query_db_outside(query['add_task'], (taskid, category, owner, email,
                                        description, tag, enabled, freqency,
                                        task_type, threshold, filepath, upload_time,
-                                       update_time,content, upload_user_id, taskname))
+                                       update_time,content, upload_user_id,taskname,))
     if run_now:
         __main__.scheduler.add_job(func=run, kwargs={
                 'user_id': upload_user_id,
@@ -107,7 +107,7 @@ def reschedule_task():
     query_db_outside(query['update_task'], (category, owner, email,
                                        description, tag, freqency,
                                        task_type, threshold, content,
-                                       update_time, upload_user_id, taskname, taskid))
+                                       update_time, upload_user_id, taskname, taskid,))
     if enabled:
         __main__.scheduler.remove_job(taskid)
 

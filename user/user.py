@@ -29,7 +29,6 @@ def getHeadImgByUserid():
         return jsonify({'code': 401, 'meaasge': 'No This User', 'data': ''})
     if redis.get(sessionid) is not None:
         userid = redis.get(sessionid).decode()
-        print(userid)
         imgurl = query_db_outside(query['selectUserImgByUserid'], (userid,))
         return jsonify({'code': 200, 'meaasge': 'ok', 'data': imgurl[0]['imgpath']})
 

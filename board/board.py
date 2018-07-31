@@ -1,3 +1,5 @@
+import time
+
 from redis import Redis
 
 from db.query_db import query_db_outside
@@ -12,9 +14,13 @@ redis = Redis()
 @board.route('/daily_list', methods=['GET','POST'])
 def selectDailyListByUserId():
     sessionid = request.args.get('sessionid')
+    print(time.time());
     userid = getuserid(sessionid)
+    print(time.time());
     dailyList = query_db_outside(query['select_daily'],(userid,))
+    print(time.time());
     dailyTabList = query_db_outside(query["select_daily_desc"],(userid,))
+    print(time.time());
     return jsonify({'code': 200, 'meaasge': 'ok', 'data': {'tabData':dailyTabList,'chartData':chartList(dailyList)}})
 # 查询weekly数据
 @board.route('/weekly_list', methods=['GET','POST'])
@@ -81,7 +87,7 @@ def selectDailyListByCategory():
     sessionid = request.args.get('sessionid')
     userid = getuserid(sessionid)
     dailyList = query_db_outside(query['category_select_daily'],(category,category,category,userid,))
-    dailyTabList = query_db_outside(query['category_select_daily_desc'], (category, category, category, userid,))
+    dailyTabList = query_db_outside(query['category_select_daily_desc'], (category,category,category,userid,))
     return jsonify({'code': 200, 'meaasge': 'ok', 'data': {'tabData':dailyTabList,'chartData':chartList(dailyList)}})
 # 查询特定类别的weekly数据
 @board.route('/category_weekly_list', methods=['GET','POST'])
@@ -98,7 +104,7 @@ def selectMonthlyByCategory():
     category = request.args.get('category')
     sessionid = request.args.get('sessionid')
     userid = getuserid(sessionid)
-    monthlyList = query_db_outside(query['category_monthly_list'],(category,category,category,userid,))
+    monthlyList = query_db_outside(query['category_monthly_list'], (category,category,category,userid,))
     monthlyTabList = query_db_outside(query['category_monthly_list_desc'], (category, category, category, userid,))
     return jsonify({'code': 200, 'meaasge': 'ok', 'data': {'tabData': monthlyTabList, 'chartData': chartList(monthlyList)}})
 

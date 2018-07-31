@@ -6,11 +6,12 @@ query = {
       SELECT * ,
        (select COUNT(taskid)
          from result_tab a
-         WHERE a.taskid = task.taskid) as totalrun,
+         WHERE a.taskid = t.taskid) as totalrun,
        (select COUNT(taskid)
          from result_tab a
-         WHERE a.taskid = task.taskid And a.status = 'Fail') as totalfails
-      From task
+         WHERE a.taskid = t.taskid And a.status = 'Fail') as totalfails,
+       (select result FROM result_tab WHERE taskid = t.taskid ORDER BY run_time DESC limit 1) as count
+      From task t
       WHERE remove = 0 AND upload_user_id = IFNULL(?,upload_user_id)
       ORDER BY last_runtime DESC
     ''',
@@ -90,9 +91,27 @@ query = {
     'filtrateSelect':'''
       SELECT * ,
         (select COUNT(taskid) FROM result_tab a WHERE a.taskid = task.taskid) as totalrun,
-        (select COUNT(taskid) FROM result_tab a WHERE a.taskid = task.taskid And a.status = 0) as totalfails 
+        (select COUNT(taskid) FROM result_tab a WHERE a.taskid = task.taskid And a.status = 0) as totalfails,
+        (select result FROM result_tab WHERE taskid = task.taskid ORDER BY run_time DESC limit 1) as count
       From task 
       WHERE upload_user_id = IFNULL(?,upload_user_id) AND freqency = IFNULL(?,freqency) AND enabled = IFNULL(?,enabled) AND category = IFNULL(?,category)
+    ''',
+    'SelectTaskOfMike': '''
+      SELECT
+      (SELECT result FROM result_tab WHERE run_time = MAX(r.run_time) limit 1) as last_count, 
+      MAX(r.run_time) as last_runtimes,
+      (SELECT result FROM result_tab WHERE run_time = MAX(r.run_time) limit 1) - (SELECT a.result FROM result_tab  a WHERE a.taskid = t.taskid  order by a.run_time desc limit 1,1) as chang, 
+      t.*
+      FROM   (SELECT * FROM result_tab WHERE taskid in (SELECT taskid from task WHERE category = ?)) r  
+      left join task t ON t.taskid = r.taskid  
+      group by r.taskid
+    ''',
+    'selctMikeTaskLogById':'''
+      SELECT *
+      FROM result_tab
+      WHERE
+      taskid = ?
+      ORDER BY run_time DESC
     '''
 }
 

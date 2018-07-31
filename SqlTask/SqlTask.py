@@ -22,7 +22,7 @@ def run(user_id, taskid, content, freqency, threshold, taskname, category, descr
         stmt = ibm_db.exec_immediate(conn, sql)
         result = ibm_db.fetch_assoc(stmt)
     except:
-        query_db_outside(query['tasklog'], (taskname, taskid, '0', 'DB error', insert_time))
+        query_db_outside(query['tasklog'], (taskname, taskid, '0', 'DB error', insert_time,))
         return
 
     result_count = int(result['1'])
@@ -41,5 +41,5 @@ def run(user_id, taskid, content, freqency, threshold, taskname, category, descr
         resulttab_status = 'Success'
         print('\033[1;30;47m<' + taskname + '> [id:' + taskid + ']' + 'success!' + '\033[0m')
 
-    query_db_outside(query[table[freqency]], (taskid, result_count, result_time, daily_status, user_id, insert_time, taskname, category, description))
-    query_db_outside(query['add_resulttab'], (taskname, taskid, result_count, resulttab_status, insert_time, '10s'))
+    query_db_outside(query[table[freqency]], (taskid, result_count, result_time, daily_status, user_id, insert_time, taskname, category, description,))
+    query_db_outside(query['add_resulttab'], (taskname, taskid, result_count, resulttab_status, insert_time, '10s',))
