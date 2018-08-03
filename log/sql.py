@@ -12,7 +12,7 @@ query = {
          WHERE a.taskid = t.taskid And a.status = 'Fail') as totalfails,
        (select result FROM result_tab WHERE taskid = t.taskid ORDER BY run_time DESC limit 1) as count
       From task t
-      WHERE remove = 0 AND upload_user_id = IFNULL(?,upload_user_id)
+      WHERE remove = 0
       ORDER BY last_runtime DESC
     ''',
     'select_task':'''
@@ -39,7 +39,7 @@ query = {
       FROM
         (SELECT *
             from dailylog
-            WHERE result_time = ? AND status = 'Fail' AND user_id = IFNULL(?,user_id)) b
+            WHERE result_time = ? AND status = 'Fail') b
         LEFT JOIN task a 
         ON a.taskid = b.taskid
     ''',
@@ -48,7 +48,7 @@ query = {
       FROM
         (SELECT *
             from weeklylog
-            WHERE result_time = ? AND status = 'Fail' AND user_id = IFNULL(?,user_id)) b
+            WHERE result_time = ? AND status = 'Fail') b
         LEFT JOIN task a 
         ON a.taskid = b.taskid
     ''',
@@ -66,7 +66,7 @@ query = {
       FROM
         (SELECT *
             from dailylog
-            WHERE result_time = ? AND status = 'Fail' AND category = ? AND user_id = IFNULL(?,user_id)) b
+            WHERE result_time = ? AND status = 'Fail' AND category = ?) b
         LEFT JOIN task a 
         ON a.taskid = b.taskid
     ''',
@@ -75,7 +75,7 @@ query = {
       FROM
         (SELECT *
           from weeklylog
-          WHERE result_time = ? AND status = 'Fail' AND category = ? AND user_id = IFNULL(?,user_id)) b
+          WHERE result_time = ? AND status = 'Fail' AND category = ?) b
       LEFT JOIN task a 
       ON a.taskid = b.taskid
     ''',
@@ -84,7 +84,7 @@ query = {
       FROM
         (SELECT *
           from monthlylog
-          WHERE result_time = ? AND status = 'Fail' AND category = ? AND user_id = IFNULL(?,user_id)) b
+          WHERE result_time = ? AND status = 'Fail' AND category = ?) b
       LEFT JOIN task a 
       ON a.taskid = b.taskid
     ''',
@@ -94,16 +94,16 @@ query = {
         (select COUNT(taskid) FROM result_tab a WHERE a.taskid = task.taskid And a.status = 0) as totalfails,
         (select result FROM result_tab WHERE taskid = task.taskid ORDER BY run_time DESC limit 1) as count
       From task 
-      WHERE upload_user_id = IFNULL(?,upload_user_id) AND freqency = IFNULL(?,freqency) AND enabled = IFNULL(?,enabled) AND category = IFNULL(?,category)
+      WHERE freqency = IFNULL(?,freqency) AND enabled = IFNULL(?,enabled) AND category = IFNULL(?,category)
     ''',
     'SelectTaskOfMike': '''
       SELECT
-      (SELECT result FROM result_tab WHERE run_time = MAX(r.run_time) limit 1) as last_count, 
+      (SELECT a.result FROM result_tab  a WHERE a.taskid = t.taskid  order by a.run_time desc limit 0,0) as last_count, 
       MAX(r.run_time) as last_runtimes,
-      (SELECT result FROM result_tab WHERE run_time = MAX(r.run_time) limit 1) - (SELECT a.result FROM result_tab  a WHERE a.taskid = t.taskid  order by a.run_time desc limit 1,1) as chang, 
+      (SELECT a.result FROM result_tab  a WHERE a.taskid = t.taskid  order by a.run_time desc limit 0,0) - (SELECT a.result FROM result_tab  a WHERE a.taskid = t.taskid  order by a.run_time desc limit 1,1) as chang,
       t.*
-      FROM   (SELECT * FROM result_tab WHERE taskid in (SELECT taskid from task WHERE category = ?)) r  
-      left join task t ON t.taskid = r.taskid  
+      FROM   (SELECT * FROM result_tab WHERE taskid in (SELECT taskid from task WHERE category = ?)) r
+      left join task t ON t.taskid = r.taskid
       group by r.taskid
     ''',
     'selctMikeTaskLogById':'''
@@ -112,6 +112,28 @@ query = {
       WHERE
       taskid = ?
       ORDER BY run_time DESC
+    ''',
+    'getUsernameByUserid':'''
+        SELECT name from sys_user_tab WHERE user_id = ?
+    ''',
+    'getTaskinfoByUsername':'''
+        SELECT taskid ,taskname ,description
+        FROM task 
+        WHERE
+        owner = ? AND category = ?
+    ''',
+    'getTasklogByUsername':'''
+        SELECT taskname ,run_time, result
+        FROM result_tab
+        WHERE
+        taskid in (SELECT taskid FROM task WHERE owner = ? AND category = ?) AND ?< run_time AND run_time <?
+        ORDER BY run_time DESC
+    ''',
+    'getCategoryByUsername': '''
+        SELECT category
+        FROM task
+        WHERE owner = ?
+        GROUP BY category
     '''
 }
 
